@@ -44,7 +44,7 @@ int main()
 {
 	Player protag,protagfriend;
 	Enemy orc;
-	std::vector <PlayableCharacter> vec;
+	std::vector <Player> vec;
 	vec.push_back(protag);
 	vec.push_back(protagfriend);
 	std::cout << vec.size();
