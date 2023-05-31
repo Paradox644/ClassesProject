@@ -3,6 +3,7 @@
 #define Header_h
 #include<iostream>
 #include<cstdlib>
+#include<string>
 //Структура:
 //CreatureEntity
 //	NPC
@@ -76,7 +77,7 @@ public:
 };
 std::ostream& operator<<(std::ostream& out, Enemy& e) {
 	out << "\nHP: " << e.HP_current << "/" << e.HP_max;
-	out << "\nMP: " << e.MP_current << "/" << e.MP_max;
+	out << "\nMP: " << e.MP_current << "/" << e.MP_max<<"\n";
 	return out;
 }
 class Vendor :public NPC
@@ -126,10 +127,24 @@ public:
 		healing_spell_level = fireball_level = mana_steal_level = 0;
 		hp_gain = mp_gain = 20;
 	}
+	Player(const Player& p) {
+		PlayerCount++;
+		HP_max = p.HP_max;
+		MP_max = p.MP_max;
+		set_health(p.HP_max);
+		set_mana(p.MP_max);
+		player_level = p.player_level;
+		skill_points = p.skill_points;
+		healing_spell_level = p.healing_spell_level;
+		fireball_level = p.fireball_level;
+		mana_steal_level = p.mana_steal_level;
+		hp_gain = p.hp_gain;
+		mp_gain = p.mp_gain;
+	}
 	void heal(double heal_amount) {
 		set_health(get_current_health() + heal_amount * 1.5); // лечение, получаемое игроком, увеличено
 	}
-	void Purification() {
+	void Purification(PlayableCharacter& _heal_target) {
 		unsigned mana_required = 20 * healing_spell_level;
 		if (get_current_mana() > mana_required)
 		{
@@ -184,15 +199,22 @@ public:
 		}
 		skill_points--;
 	}
+	bool operator<(CreatureEntity& c);
+	bool operator>(CreatureEntity& c);
 	friend std::ostream& operator<<(std::ostream&, const Player&);
 };
-
+bool Player::operator<(CreatureEntity& c) {
+	return (get_current_health() < c.get_current_health());
+}
+bool Player::operator>(CreatureEntity& c) {
+	return (get_current_health() > c.get_current_health());
+}
 std::ostream& operator<<(std::ostream& out, const Player& p) {
 	out << "\nLevel: " << p.player_level;
 	out << "\nHP: " << p.HP_current << "/" << p.HP_max;
 	out << "\nMana: " << p.MP_current << "/" << p.MP_max;
 	out << "\nUnspent skill points: " << p.skill_points;
-	out << "\nAbility levels: \nPurification: " << p.healing_spell_level << "\nFireball: " << p.fireball_level << "\nMana steal: " << p.mana_steal_level;
+	out << "\nAbility levels: \nPurification: " << p.healing_spell_level << "\nFireball: " << p.fireball_level << "\nMana steal: " << p.mana_steal_level<<"\n";
 	return out;
 }
 class Summon : PlayableCharacter
@@ -203,4 +225,5 @@ public:
 		set_health(get_current_health() + heal_amount * 0.75); //лечение, получаемое призываемым существом, уменьшено
 	}
 };
+
 #endif // !Header_h
